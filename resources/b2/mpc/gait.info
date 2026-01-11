@@ -1,3 +1,7 @@
+; B2 Gait Configuration
+; 通用四足机器人步态定义
+; 依赖于 task.info 中的接触点名称包含 "LF", "RF", "LH", "RH"
+
 list
 {
   [0] stance
@@ -14,242 +18,260 @@ list
   [11] pawup
 }
 
+; 0. 站立模式 (全接触)
 stance
- {
+{
    modeSequence
    {
-     [0]     STANCE
+     [0]      STANCE
    }
    switchingTimes
    {
-     [0]     0.0
-     [1]     0.5
+     [0]      0.0
+     [1]      1.0
    }
 }
 
+; 1. 小跑 (Trot) - 最常用的移动步态
+; 周期 0.7s, 占空比 50%
 trot
- {
+{
    modeSequence
    {
-     [0]     LF_RH
-     [1]     RF_LH
+     [0]      LF_RH
+     [1]      RF_LH
    }
    switchingTimes
    {
-     [0]     0.0
-     [1]     0.35
-     [2]     0.70
+     [0]      0.0
+     [1]      0.35
+     [2]      0.70
    }
 }
 
+; 2. 原地踏步 (Standing Trot)
+; 包含明显的 STANCE 过渡期，用于平滑切换
 standing_trot
 {
   modeSequence
   {
-    [0]     LF_RH
-    [1]     STANCE
-    [2]     RF_LH
-    [3]     STANCE
+    [0]      LF_RH
+    [1]      STANCE
+    [2]      RF_LH
+    [3]      STANCE
   }
   switchingTimes
   {
-    [0]     0.00
-    [1]     0.30
-    [2]     0.35
-    [3]     0.65
-    [4]     0.70
+    [0]      0.00
+    [1]      0.30
+    [2]      0.35
+    [3]      0.65
+    [4]      0.70
   }
 }
 
+; 3. 飞奔 (Flying Trot)
+; 有腾空期 (FLY)，B2 动力强劲，可以支持这种步态
 flying_trot
 {
   modeSequence
   {
-    [0]     LF_RH
-    [1]     FLY
-    [2]     RF_LH
-    [3]     FLY
+    [0]      LF_RH
+    [1]      FLY
+    [2]      RF_LH
+    [3]      FLY
   }
   switchingTimes
   {
-    [0]     0.00
-    [1]     0.27
-    [2]     0.30
-    [3]     0.57
-    [4]     0.60
+    [0]      0.00
+    [1]      0.27
+    [2]      0.30  ; 0.03s 腾空
+    [3]      0.57
+    [4]      0.60  ; 总周期 0.6s (更快)
   }
 }
 
+; 4. 溜蹄 (Pace) - 侧向同侧腿移动 (不推荐用于 B2 稳定行走，主要用于演示)
 pace
 {
   modeSequence
   {
-    [0]     LF_LH
-    [1]     FLY
-    [2]     RF_RH
-    [3]     FLY
+    [0]      LF_LH
+    [1]      FLY
+    [2]      RF_RH
+    [3]      FLY
   }
   switchingTimes
   {
-    [0]     0.0
-    [1]     0.28
-    [2]     0.30
-    [3]     0.58
-    [4]     0.60
+    [0]      0.0
+    [1]      0.28
+    [2]      0.30
+    [3]      0.58
+    [4]      0.60
   }
 }
 
+; 5. 原地溜蹄 (Standing Pace)
 standing_pace
 {
   modeSequence
   {
-    [0]     LF_LH
-    [1]     STANCE
-    [2]     RF_RH
-    [3]     STANCE
+    [0]      LF_LH
+    [1]      STANCE
+    [2]      RF_RH
+    [3]      STANCE
   }
   switchingTimes
   {
-    [0]     0.0
-    [1]     0.30
-    [2]     0.35
-    [3]     0.65
-    [4]     0.70
+    [0]      0.0
+    [1]      0.30
+    [2]      0.35
+    [3]      0.65
+    [4]      0.70
   }
 }
 
+; 6. 动态行走 (Dynamic Walk)
+; 四拍步态，稳定性高
 dynamic_walk
 {
   modeSequence
   {
-    [0]     LF_RF_RH
-    [1]     RF_RH
-    [2]     RF_LH_RH
-    [3]     LF_RF_LH
-    [4]     LF_LH
-    [5]     LF_LH_RH
+    [0]      LF_RF_RH  ; LH Swing
+    [1]      RF_RH     ; LH/LF Swing transition
+    [2]      RF_LH_RH  ; LF Swing
+    [3]      LF_RF_LH  ; RH Swing
+    [4]      LF_LH     ; RH/RF Swing transition
+    [5]      LF_LH_RH  ; RF Swing
   }
   switchingTimes
   {
-    [0]     0.0
-    [1]     0.2
-    [2]     0.3
-    [3]     0.5
-    [4]     0.7
-    [5]     0.8
-    [6]     1.0
+    [0]      0.0
+    [1]      0.2
+    [2]      0.3
+    [3]      0.5
+    [4]      0.7
+    [5]      0.8
+    [6]      1.0
   }
 }
 
+; 7. 静态行走 (Static Walk)
+; 总是保持至少3条腿着地，最慢但最稳
 static_walk
 {
   modeSequence
   {
-    [0]     LF_RF_RH
-    [1]     RF_LH_RH
-    [2]     LF_RF_LH
-    [3]     LF_LH_RH
+    [0]      LF_RF_RH
+    [1]      RF_LH_RH
+    [2]      LF_RF_LH
+    [3]      LF_LH_RH
   }
   switchingTimes
   {
-    [0]     0.0
-    [1]     0.3
-    [2]     0.6
-    [3]     0.9
-    [4]     1.2
+    [0]      0.0
+    [1]      0.3
+    [2]      0.6
+    [3]      0.9
+    [4]      1.2
   }
 }
 
+; 8. 缓步 (Amble)
 amble
 {
   modeSequence
   {
-    [0]     RF_LH
-    [1]     LF_LH
-    [2]     LF_RH
-    [3]     RF_RH
+    [0]      RF_LH
+    [1]      LF_LH
+    [2]      LF_RH
+    [3]      RF_RH
   }
   switchingTimes
   {
-    [0]     0.0
-    [1]     0.15
-    [2]     0.40
-    [3]     0.55
-    [4]     0.80
+    [0]      0.0
+    [1]      0.15
+    [2]      0.40
+    [3]      0.55
+    [4]      0.80
   }
 }
 
+; 9. 林迪舞步 (Lindy Hop) - 演示性动作
 lindyhop
 {
   modeSequence
   {
-    [0]     LF_RH
-    [1]     STANCE
-    [2]     RF_LH
-    [3]     STANCE
-    [4]     LF_LH
-    [5]     RF_RH
-    [6]     LF_LH
-    [7]     STANCE
-    [8]     RF_RH
-    [9]     LF_LH
+    [0]      LF_RH
+    [1]      STANCE
+    [2]      RF_LH
+    [3]      STANCE
+    [4]      LF_LH
+    [5]      RF_RH
+    [6]      LF_LH
+    [7]      STANCE
+    [8]      RF_RH
+    [9]      LF_LH
     [10]     RF_RH
     [11]     STANCE
   }
   switchingTimes
   {
-    [0]     0.00 ; Step 1
-    [1]     0.35 ; Stance
-    [2]     0.45 ; Step 2
-    [3]     0.80 ; Stance
-    [4]     0.90  ; Tripple step
-    [5]     1.125 ;
-    [6]     1.35  ;
-    [7]     1.70  ; Stance
-    [8]     1.80  ; Tripple step
-    [9]     2.025 ;
-    [10]    2.25  ;
-    [11]    2.60  ; Stance
-    [12]    2.70  ;
+    [0]      0.00
+    [1]      0.35
+    [2]      0.45
+    [3]      0.80
+    [4]      0.90
+    [5]      1.125
+    [6]      1.35
+    [7]      1.70
+    [8]      1.80
+    [9]      2.025
+    [10]     2.25
+    [11]     2.60
+    [12]     2.70
   }
 }
 
+; 10. 跳跃 (Skipping)
 skipping
 {
   modeSequence
   {
-    [0]     LF_RH
-    [1]     FLY
-    [2]     LF_RH
-    [3]     FLY
-    [4]     RF_LH
-    [5]     FLY
-    [6]     RF_LH
-    [7]     FLY
+    [0]      LF_RH
+    [1]      FLY
+    [2]      LF_RH
+    [3]      FLY
+    [4]      RF_LH
+    [5]      FLY
+    [6]      RF_LH
+    [7]      FLY
   }
   switchingTimes
   {
-    [0]     0.00
-    [1]     0.27
-    [2]     0.30
-    [3]     0.57
-    [4]     0.60
-    [5]     0.87
-    [6]     0.90
-    [7]     1.17
-    [8]     1.20
+    [0]      0.00
+    [1]      0.27
+    [2]      0.30
+    [3]      0.57
+    [4]      0.60
+    [5]      0.87
+    [6]      0.90
+    [7]      1.17
+    [8]      1.20
   }
 }
 
+; 11. 抬左前腿 (Paw Up)
+; 支撑腿为 RF_LH_RH，意味着 LF (左前) 抬起
 pawup
 {
    modeSequence
    {
-     [0]     RF_LH_RH
+     [0]      RF_LH_RH
    }
    switchingTimes
    {
-     [0]     0.0
-     [1]     2.0
+     [0]      0.0
+     [1]      2.0
    }
 }
